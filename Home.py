@@ -178,7 +178,7 @@ def send_email(enrollee_id, gym, state, enrollee_email, client, reference_id, ti
         message["From"] = sender_email
         message["To"] = receiver_email
         message["Cc"] = enrollee_email
-        message["Subject"] = f"TESTING !!! GYM ACCESS REQUEST - {enrollee_id}"
+        message["Subject"] = f"TESTING !!!! GYM ACCESS REQUEST - {enrollee_id}"
         
         body = f"""
             <p>Dear Contact Centre,</p>
