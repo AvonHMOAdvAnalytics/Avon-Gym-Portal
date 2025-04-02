@@ -172,7 +172,7 @@ def send_email(enrollee_id, gym, state, enrollee_email, client, reference_id, ti
         # sender_password = st.secrets['email_password']
         sender_email = email_username
         sender_password = email_password
-        receiver_email = "contactcenterunit@avonhealthcare.com"
+        receiver_email = "callcentre@avonhealthcare.com"
         
         message = MIMEMultipart()
         message["From"] = sender_email
