@@ -8,46 +8,48 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import random
 import os
+import pytz  # Added for timezone handling
 
 st.set_page_config(layout="wide")
 image = Image.open('GymPortal.png')
 st.image(image, use_column_width=True)
 
-# # Establish server connection
-# conn = pyodbc.connect(
-#     'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#     + st.secrets['server']
-#     + ';DATABASE='
-#     + st.secrets['database']
-#     + ';UID='
-#     + st.secrets['username']
-#     + ';PWD='
-#     + st.secrets['password']
-# )
-
-server = os.environ.get('server_name')
-database = os.environ.get('db_name')
-username = os.environ.get('db_username')
-password = os.environ.get('db_password')
-email_username = os.environ.get('email_username')
-email_password = os.environ.get('email_password')
-
+# Establish server connection
 conn = pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        + server
-        +';DATABASE='
-        + database
-        +';UID='
-        + username
-        +';PWD='
-        + password
-        )
+    'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+    + st.secrets['server']
+    + ';DATABASE='
+    + st.secrets['database']
+    + ';UID='
+    + st.secrets['username']
+    + ';PWD='
+    + st.secrets['password']
+)
+
+# server = os.environ.get('server_name')
+# database = os.environ.get('db_name')
+# username = os.environ.get('db_username')
+# password = os.environ.get('db_password')
+# email_username = os.environ.get('email_username')
+# email_password = os.environ.get('email_password')
+
+# conn = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         + server
+#         +';DATABASE='
+#         + database
+#         +';UID='
+#         + username
+#         +';PWD='
+#         + password
+#         )
 
 st.title('AVON HMO Gym Access Tracker')
-st.sidebar.subheader('Welcome to the AVON HMO Gym Access Tracker')
+# Removed the welcome message from sidebar
 
-# Provide input of MemberNo
-enrollee_id = st.sidebar.text_input('Kindly input your Member ID to confirm your gym eligibility')
+# Moved Member ID input from sidebar to the main page
+st.subheader("Member Verification")
+enrollee_id = st.text_input('Kindly input your Member ID to confirm your gym eligibility')
 
 # Initialize session state
 if 'state_selection' not in st.session_state:
@@ -168,10 +170,10 @@ def log_gym_access(memberno, name, gym_provider, reference_id):
 
 def send_email(enrollee_id, gym, state, enrollee_email, client, reference_id, timestamp):
     try:
-        # sender_email = st.secrets['email_username']
-        # sender_password = st.secrets['email_password']
-        sender_email = email_username
-        sender_password = email_password
+        sender_email = st.secrets['email_username']
+        sender_password = st.secrets['email_password']
+        # sender_email = email_username
+        # sender_password = email_password
         receiver_email = "callcentre@avonhealthcare.com"
         
         message = MIMEMultipart()
@@ -179,6 +181,9 @@ def send_email(enrollee_id, gym, state, enrollee_email, client, reference_id, ti
         message["To"] = receiver_email
         message["Cc"] = enrollee_email
         message["Subject"] = f"TESTING !!!! GYM ACCESS REQUEST - {enrollee_id}"
+        
+        # Format timestamp in West African Time
+        formatted_timestamp = timestamp.strftime('%d-%b-%Y %I:%M:%S %p')
         
         body = f"""
             <p>Dear Contact Centre,</p>
@@ -192,7 +197,7 @@ def send_email(enrollee_id, gym, state, enrollee_email, client, reference_id, ti
                 <p><strong>State:</strong> {state}</p>
                 <p><strong>Gym Provider:</strong> {gym}</p>
                 <p><strong>Reference ID:</strong> {reference_id}</p>
-                <p><strong>Booking Date/Time:</strong> {timestamp.strftime('%d-%b-%Y %I:%M:%S %p')}</p>
+                <p><strong>Booking Date/Time:</strong> {formatted_timestamp}</p>
             </div>
 
             <p>Best regards,<br>Gym Access Portal</p>
@@ -214,7 +219,7 @@ def send_email(enrollee_id, gym, state, enrollee_email, client, reference_id, ti
 
 def display_confirmation_box():
     if st.session_state['show_confirmation'] and st.session_state['reference_id'] and st.session_state['booking_timestamp']:
-        # Format the timestamp in a user-friendly way
+        # Format the timestamp in a user-friendly way in West African Time
         formatted_time = st.session_state['booking_timestamp'].strftime('%d-%b-%Y %I:%M:%S %p')
         
         # Create a styled HTML box for the confirmation message
@@ -258,8 +263,8 @@ def display_confirmation_box():
             # Clear the pending data after logging
             st.session_state['pending_gym_log'] = {}
 
-# Check eligibility when Submit is clicked
-if st.sidebar.button("Submit", key="button1", help="Click or Press Enter"):
+# Check eligibility when Submit is clicked - Moved from sidebar to main page
+if st.button("Submit", key="button1", help="Click or Press Enter"):
     if enrollee_id:
         query = """
             SELECT DISTINCT
@@ -366,8 +371,10 @@ if st.session_state['is_eligible']:
                         # Generate reference ID
                         reference_id = generate_unique_reference_id()
                         
-                        # Save the current timestamp
-                        current_timestamp = datetime.now()
+                        # Save the current timestamp in West African Time (WAT)
+                        # WAT is UTC+1
+                        wat_timezone = pytz.timezone('Africa/Lagos')
+                        current_timestamp = datetime.now(wat_timezone)
                         st.session_state['booking_timestamp'] = current_timestamp
                         
                         # Don't log to database yet, just send email
