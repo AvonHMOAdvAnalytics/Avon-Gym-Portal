@@ -15,34 +15,34 @@ image = Image.open('GymPortal.png')
 st.image(image, use_column_width=True)
 
 # Establish server connection
-conn = pyodbc.connect(
-    'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-    + st.secrets['server']
-    + ';DATABASE='
-    + st.secrets['database']
-    + ';UID='
-    + st.secrets['username']
-    + ';PWD='
-    + st.secrets['password']
-)
-
-# server = os.environ.get('server_name')
-# database = os.environ.get('db_name')
-# username = os.environ.get('db_username')
-# password = os.environ.get('db_password')
-# email_username = os.environ.get('email_username')
-# email_password = os.environ.get('email_password')
-
 # conn = pyodbc.connect(
-#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#         + server
-#         +';DATABASE='
-#         + database
-#         +';UID='
-#         + username
-#         +';PWD='
-#         + password
-#         )
+#     'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#     + st.secrets['server']
+#     + ';DATABASE='
+#     + st.secrets['database']
+#     + ';UID='
+#     + st.secrets['username']
+#     + ';PWD='
+#     + st.secrets['password']
+# )
+
+server = os.environ.get('server_name')
+database = os.environ.get('db_name')
+username = os.environ.get('db_username')
+password = os.environ.get('db_password')
+email_username = os.environ.get('email_username')
+email_password = os.environ.get('email_password')
+
+conn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+        + server
+        +';DATABASE='
+        + database
+        +';UID='
+        + username
+        +';PWD='
+        + password
+        )
 
 st.title('AVON HMO Gym Access Tracker')
 # Removed the welcome message from sidebar
