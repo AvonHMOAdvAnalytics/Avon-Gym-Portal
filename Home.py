@@ -15,41 +15,45 @@ image = Image.open('GymPortal.png')
 st.image(image, use_column_width=True)
 
 # Establish server connection
-# conn = pyodbc.connect(
-#     'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-#     + st.secrets['server']
-#     + ';DATABASE='
-#     + st.secrets['database']
-#     + ';UID='
-#     + st.secrets['username']
-#     + ';PWD='
-#     + st.secrets['password']
-# )
-
-server = os.environ.get('server_name')
-database = os.environ.get('db_name')
-username = os.environ.get('db_username')
-password = os.environ.get('db_password')
-email_username = os.environ.get('email_username')
-email_password = os.environ.get('email_password')
-
 conn = pyodbc.connect(
-        'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
-        + server
-        +';DATABASE='
-        + database
-        +';UID='
-        + username
-        +';PWD='
-        + password
-        )
+    'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+    + st.secrets['server']
+    + ';DATABASE='
+    + st.secrets['database']
+    + ';UID='
+    + st.secrets['username']
+    + ';PWD='
+    + st.secrets['password']
+)
+
+# server = os.environ.get('server_name')
+# database = os.environ.get('db_name')
+# username = os.environ.get('db_username')
+# password = os.environ.get('db_password')
+# email_username = os.environ.get('email_username')
+# email_password = os.environ.get('email_password')
+
+# conn = pyodbc.connect(
+#         'DRIVER={ODBC Driver 17 for SQL Server};SERVER='
+#         + server
+#         +';DATABASE='
+#         + database
+#         +';UID='
+#         + username
+#         +';PWD='
+#         + password
+#         )
 
 st.title('AVON HMO Gym Access Tracker')
 # Removed the welcome message from sidebar
 
+# Get enrollee ID from URL query parameters
+query_params = st.experimental_get_query_params()
+default_enrollee_id = query_params.get("member", [""])[0]  # "member" comes from ?member=12345
+
 # Moved Member ID input from sidebar to the main page
 st.subheader("Member Verification")
-enrollee_id = st.text_input('Kindly input your Member ID to confirm your gym eligibility')
+enrollee_id = st.text_input('Kindly input your Member ID to confirm your gym eligibility', value=default_enrollee_id)
 
 # Initialize session state
 if 'state_selection' not in st.session_state:
