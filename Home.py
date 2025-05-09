@@ -184,7 +184,7 @@ def send_email(enrollee_id, gym, state, enrollee_email, client, reference_id, ti
         message["From"] = sender_email
         message["To"] = receiver_email
         message["Cc"] = enrollee_email
-        message["Subject"] = f"TESTING !!!! GYM ACCESS REQUEST - {enrollee_id}"
+        message["Subject"] = f"GYM ACCESS REQUEST - {enrollee_id}"
         
         # Format timestamp in West African Time
         formatted_timestamp = timestamp.strftime('%d-%b-%Y %I:%M:%S %p')
